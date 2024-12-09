@@ -1,0 +1,42 @@
+from pydantic import BaseModel, EmailStr, Field
+from datetime import datetime
+from typing import List, Optional
+
+class PokemonCreate(BaseModel):
+    name: str
+    schemas:  str
+    level: int
+    type_1:str
+    hp: Optional[int] = 10
+    attack: Optional[int] = 10
+    defense: Optional[int] = 10
+    shiny: Optional[bool] = False
+    ability: Optional[str] = None
+    nature: Optional[str] = None
+    evolution_stage: Optional[int] = 1
+    
+class PokemonResponse(PokemonCreate):
+    id: int
+    team_id: int
+    
+
+    class Config:
+        orm_mode = True
+
+class PokemonTeamCreate(BaseModel):
+
+    name: Optional[str] = "My Team"
+    pokemons: List[PokemonCreate] = []
+
+class PokemonTeamResponse(BaseModel):
+    id: int
+    name: str
+    pokemons: List[PokemonResponse]
+
+    class Config:
+        orm_mode = True
+
+
+
+
+
