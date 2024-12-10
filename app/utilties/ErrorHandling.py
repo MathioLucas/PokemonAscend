@@ -3,6 +3,19 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 import logging
 
+
+
+logging.basicConfig(
+    level=logging.ERROR,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler("app_errors.log")
+    ]
+)
+
+logger = logging.getLogger("custom_error_middleware")
+
 class CustomErrorMiddleware(BaseHTTPMiddleware):
     """
     Global error handling middleware
@@ -12,7 +25,19 @@ class CustomErrorMiddleware(BaseHTTPMiddleware):
             response = await call_next(request)
             return response
         except Exception as exc:
-            # Logging the error 
+            logger.error(f"Unhandled exception: {exc}", exc_info=True)  # Log with traceback
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "error": "Internal Server Error",
+                    "detail": str(exc),
+                    "request": {
+                        "method": request.method,
+                        "url": str(request.url)
+                    }
+                }
+            )
+            
             print(f"Unhandled exception: {exc}")
             
             # Default error response

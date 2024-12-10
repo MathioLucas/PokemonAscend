@@ -1,0 +1,46 @@
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
+from app.database.database import Base
+
+class PokemonTeam(Base):
+    """
+    Model representing a trainer's Pokemon team
+    """
+    __tablename__ = "pokemon_teams"
+
+    id = Column(Integer, primary_key=True, index=True)
+    trainer_id = Column(Integer, ForeignKey('users.id'))
+    name = Column(String, nullable=False, default="My Team")
+    
+    # Relationship to individual Pokemon
+    pokemons = relationship("Pokemon", back_populates="team")
+    # Relationship to the trainer
+    trainer = relationship("User", back_populates="pokemon_teams")
+
+class Pokemon(Base):
+    """
+    Model representing an individual Pokemon
+    """
+    __tablename__ = "pokemons"
+
+    id = Column(Integer, primary_key=True, index=True)
+    team_id = Column(Integer, ForeignKey('pokemon_teams.id'))
+    name = Column(String, nullable=False)
+    species = Column(String, nullable=False)
+    level = Column(Integer, default=1)
+    type_1 = Column(String, nullable=False)  # Primary type (e.g., 'Fire')
+    hp = Column(Integer, default=10)  # Base HP
+    attack = Column(Integer, default=10)  # Attack stat
+    defense = Column(Integer, default=10)  # Defense stat
+    shiny = Column(Boolean, default=False)  # Indicates if this Pokémon is shiny
+    ability = Column(String, nullable=True)  # Pokémon's ability
+    nature = Column(String, nullable=True)  # Nature (e.g., 'Adamant')
+    evolution_stage = Column(Integer, default=1)  # Evolution stage (1 = basic)
+    
+ 
+    
+    # Relationship back to the team
+    team = relationship("PokemonTeam", back_populates="pokemons")
+
+# Update User model to include relationship
+Base.pokemon_teams = relationship("PokemonTeam", back_populates="trainer")
