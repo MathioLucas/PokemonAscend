@@ -1,6 +1,6 @@
 import random
 from typing import List, Dict, Tuple
-from app.models.pokemon_team import Pokemon
+from app.models import Pokemon
 from pydantic import BaseModel
 
 class BattleOutcome(BaseModel):
